@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, Clock3 } from "lucide-react";
+import { assetPath } from "@/lib/site";
 
 const articles = [
   { tag: "ROUTE / 01", title: "48 часов без города", read: "6 мин", image: "/images/hero-route.png", text: "Небольшой сценарий выезда: как оставить в рюкзаке только то, что действительно работает." },
@@ -9,5 +10,5 @@ const articles = [
 ];
 
 export function JournalPage() {
-  return <main className="journal-page"><section className="shell journal-head"><p className="eyebrow">WAYPOINT JOURNAL</p><h1>Useful stories<br />for the <i>road.</i></h1><p>Маршруты, полевые заметки и гайды — редакционный слой будущего бренда. Материалы ниже — контентные концепты, не опубликованные статьи.</p></section><section className="shell journal-grid">{articles.map((article, index) => <article className={`journal-card ${index === 0 ? "lead" : ""}`} key={article.title}><Link href={`/journal/${index === 0 ? "48-hours-away" : "field-note"}`}><div className="journal-card-image"><img src={article.image} alt="" /><span>{article.tag}</span></div><div><p><Clock3 size={14} /> {article.read}</p><h2>{article.title}</h2><span>{article.text}</span><b>Read field note <ArrowRight size={15} /></b></div></Link></article>)}</section><section className="journal-subscribe"><div className="shell"><p className="eyebrow">FIELD NOTES / INBOX</p><h2>Не пропустить<br />следующую <i>точку.</i></h2><p>Подписка</p><button className="button button-light" disabled>Подписка в production</button></div></section></main>;
+  return <main className="journal-page"><section className="shell journal-head"><p className="eyebrow">WAYPOINT JOURNAL</p><h1>Useful stories<br />for the <i>road.</i></h1><p>Маршруты, полевые заметки и гайды — редакционный слой будущего бренда. Материалы ниже — контентные концепты, не опубликованные статьи.</p></section><section className="shell journal-grid">{articles.map((article, index) => <article className={`journal-card ${index === 0 ? "lead" : ""}`} key={article.title}><Link href={`/journal/${index === 0 ? "48-hours-away" : "field-note"}`}><div className="journal-card-image"><img src={assetPath(article.image)} alt="" /><span>{article.tag}</span></div><div><p><Clock3 size={14} /> {article.read}</p><h2>{article.title}</h2><span>{article.text}</span><b>Read field note <ArrowRight size={15} /></b></div></Link></article>)}</section><section className="journal-subscribe"><div className="shell"><p className="eyebrow">FIELD NOTES / INBOX</p><h2>Не пропустить<br />следующую <i>точку.</i></h2><p>Подписка</p><button className="button button-light" disabled>Подписка в production</button></div></section></main>;
 }

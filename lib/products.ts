@@ -1,4 +1,5 @@
 import { Product } from "@/types/store";
+import { assetPath } from "@/lib/site";
 
 const commonColors = [
   { name: "Moss", hex: "#657255" },
@@ -16,7 +17,7 @@ export const categories = [
   { number: "08", name: "Essentials", description: "Небольшие важные вещи", href: "/catalog?category=Essentials" },
 ];
 
-export const products: Product[] = [
+const productCatalog: Product[] = [
   {
     id: "ridge-2", slug: "ridge-2", name: "Ridge 2", collection: "SHELTER / 02", category: "Shelter", price: 52900,
     description: "Лёгкая двухместная палатка для трёх сезонов. Продуманная геометрия создаёт устойчивое укрытие, когда маршрут меняется вместе с погодой.",
@@ -115,6 +116,8 @@ export const products: Product[] = [
     description: "Складной нож для повседневных лагерных задач с уверенным хватом и простым уходом.", shortDescription: "Складной походный нож", image: "/images/field-kit.png", alt: "Предметы лагерной кухни и функциональное снаряжение", colors: [{ name: "Graphite", hex: "#30312e" }, { name: "Clay", hex: "#8e6f5b" }], rating: 4.7, reviews: 61, stock: "in", weight: "118 g", seasons: ["Summer", "Shoulder", "Winter"], tags: ["essential", "camp"], specs: [{ label: "Вес", value: "118 g" }, { label: "Сталь", value: "Sandvik 12C27" }, { label: "Длина", value: "18 cm open" }, { label: "Чехол", value: "Included" }]
   }
 ];
+
+export const products = productCatalog.map((product) => ({ ...product, image: assetPath(product.image) }));
 
 export const featuredProducts = products.filter((product) => product.tags.includes("featured"));
 export const getProduct = (slug: string) => products.find((product) => product.slug === slug);
