@@ -6,12 +6,13 @@ import { FormEvent, useMemo, useState } from "react";
 import { ArrowRight, Heart, Menu, Minus, Plus, Search, ShoppingBag, UserRound, X } from "lucide-react";
 import { products } from "@/lib/products";
 import { formatPrice } from "@/lib/format";
+import { categoryName, colorName } from "@/lib/localize";
 import { useShop } from "@/context/ShopContext";
 
 const links = [
   { href: "/catalog", label: "Каталог" },
   { href: "/kit", label: "Собрать комплект" },
-  { href: "/journal", label: "Journal" },
+  { href: "/journal", label: "Журнал" },
 ];
 
 export function Header() {
@@ -42,7 +43,7 @@ export function Header() {
           <button className="icon-button" onClick={() => setSearchOpen(true)} aria-label="Открыть поиск"><Search size={19} /></button>
           <Link className="icon-button desktop-tool" href="/account?saved=1" aria-label={`Избранное, ${favorites.length} товаров`}><Heart size={19} /><span className="tool-count">{favorites.length || ""}</span></Link>
           <Link className="icon-button desktop-tool" href="/account" aria-label="Личный кабинет"><UserRound size={19} /></Link>
-          <button className="bag-button" onClick={openCart} aria-label={`Корзина, ${cartCount} товаров`}><ShoppingBag size={19} /><span>Bag</span><b>{cartCount}</b></button>
+          <button className="bag-button" onClick={openCart} aria-label={`Корзина, ${cartCount} товаров`}><ShoppingBag size={19} /><span>Корзина</span><b>{cartCount}</b></button>
         </div>
       </div>
     </header>
@@ -60,7 +61,7 @@ export function Header() {
         <div className="search-results">
           {query.trim().length < 2 && <><p className="eyebrow">БЫСТРЫЙ ПОИСК</p><div className="quick-search"><Link href="/catalog?category=Shelter" onClick={closeAll}>Палатки</Link><Link href="/catalog?category=Carry" onClick={closeAll}>Рюкзаки</Link><Link href="/kit" onClick={closeAll}>Собрать комплект</Link></div></>}
           {query.trim().length >= 2 && results.length === 0 && <div className="empty-search"><p>Ничего не найдено</p><span>Попробуйте другую категорию или более короткий запрос.</span></div>}
-          {results.length > 0 && <><p className="eyebrow">ТОВАРЫ · {results.length}</p>{results.map((product) => <Link className="search-product" key={product.id} href={`/product/${product.slug}`} onClick={closeAll}><img src={product.image} alt="" /><span><small>{product.category.toUpperCase()}</small><b>{product.name}</b></span><em>{formatPrice(product.price)}</em></Link>)}<Link className="text-link" href={`/catalog?q=${encodeURIComponent(query)}`} onClick={closeAll}>Все результаты <ArrowRight size={15} /></Link></>}
+          {results.length > 0 && <><p className="eyebrow">ТОВАРЫ · {results.length}</p>{results.map((product) => <Link className="search-product" key={product.id} href={`/product/${product.slug}`} onClick={closeAll}><img src={product.image} alt="" /><span><small>{categoryName(product.category).toUpperCase()}</small><b>{product.name}</b></span><em>{formatPrice(product.price)}</em></Link>)}<Link className="text-link" href={`/catalog?q=${encodeURIComponent(query)}`} onClick={closeAll}>Все результаты <ArrowRight size={15} /></Link></>}
         </div>
       </section>
     </div>}
@@ -74,9 +75,9 @@ function CartDrawer() {
   return <div className="drawer-wrap" role="dialog" aria-modal="true" aria-label="Корзина">
     <button className="drawer-backdrop" aria-label="Закрыть корзину" onClick={closeCart} />
     <aside className="cart-drawer">
-      <div className="drawer-head"><div><p className="eyebrow">YOUR ROUTE</p><h2>Bag</h2></div><button className="icon-button" onClick={closeCart} aria-label="Закрыть корзину"><X /></button></div>
-      {cart.length === 0 ? <div className="empty-cart"><div className="empty-mark">W/</div><h3>Пока без снаряжения.</h3><p>Следующая точка маршрута начинается с одного полезного предмета.</p><Link href="/catalog" onClick={closeCart} className="button button-dark">Explore gear <ArrowRight size={16} /></Link></div> : <>
-        <div className="cart-lines">{cart.map((line) => <article className="cart-line" key={`${line.product.id}-${line.color}`}><img src={line.product.image} alt="" /><div><small>{line.product.collection}</small><h3>{line.product.name}</h3><p>{line.color} · {formatPrice(line.product.price)}</p><div className="quantity"><button onClick={() => updateQuantity(line.product.id, line.color, line.quantity - 1)} aria-label={`Уменьшить количество ${line.product.name}`}><Minus size={14} /></button><span>{line.quantity}</span><button onClick={() => updateQuantity(line.product.id, line.color, line.quantity + 1)} aria-label={`Увеличить количество ${line.product.name}`}><Plus size={14} /></button></div></div><button className="line-remove" onClick={() => removeFromCart(line.product.id, line.color)}>Убрать</button></article>)}</div>
+      <div className="drawer-head"><div><p className="eyebrow">ВАШ МАРШРУТ</p><h2>Корзина</h2></div><button className="icon-button" onClick={closeCart} aria-label="Закрыть корзину"><X /></button></div>
+      {cart.length === 0 ? <div className="empty-cart"><div className="empty-mark">W/</div><h3>Пока без снаряжения.</h3><p>Следующая точка маршрута начинается с одного полезного предмета.</p><Link href="/catalog" onClick={closeCart} className="button button-dark">Смотреть снаряжение <ArrowRight size={16} /></Link></div> : <>
+        <div className="cart-lines">{cart.map((line) => <article className="cart-line" key={`${line.product.id}-${line.color}`}><img src={line.product.image} alt="" /><div><small>{line.product.collection}</small><h3>{line.product.name}</h3><p>{colorName(line.color)} · {formatPrice(line.product.price)}</p><div className="quantity"><button onClick={() => updateQuantity(line.product.id, line.color, line.quantity - 1)} aria-label={`Уменьшить количество ${line.product.name}`}><Minus size={14} /></button><span>{line.quantity}</span><button onClick={() => updateQuantity(line.product.id, line.color, line.quantity + 1)} aria-label={`Увеличить количество ${line.product.name}`}><Plus size={14} /></button></div></div><button className="line-remove" onClick={() => removeFromCart(line.product.id, line.color)}>Убрать</button></article>)}</div>
         <div className="cart-summary"><div><span>Подытог</span><b>{formatPrice(subtotal)}</b></div><p>Доставка и способ оплаты выбираются на следующем шаге.</p><Link href="/checkout" onClick={closeCart} className="button button-dark button-full">Перейти к оформлению <ArrowRight size={16} /></Link><Link href="/cart" onClick={closeCart} className="button button-ghost button-full">Открыть корзину</Link></div>
       </>}
     </aside>

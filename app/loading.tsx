@@ -1,1 +1,1 @@
-export default function Loading() { return <main className="shell loading-page"><p className="eyebrow">WAYPOINT / LOADING</p><div className="loading-line" /><div className="loading-cards"><i /><i /><i /></div></main>; }
+export default function Loading() { return <main className="shell loading-page"><p className="eyebrow">WAYPOINT / ЗАГРУЗКА</p><div className="loading-line" /><div className="loading-cards"><i /><i /><i /></div></main>; }

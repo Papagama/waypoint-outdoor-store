@@ -6,10 +6,10 @@ import { ShopProvider } from "@/context/ShopContext";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://waypoint.example"),
-  title: { default: "WAYPOINT — Equipment for the way ahead", template: "%s — WAYPOINT" },
-  description: "Draft интернет-магазина функционального outdoor-снаряжения WAYPOINT.",
+  title: { default: "WAYPOINT — Снаряжение для вашего пути", template: "%s — WAYPOINT" },
+  description: "Демонстрационный интернет-магазин функционального снаряжения WAYPOINT.",
   alternates: { canonical: "/" },
-  openGraph: { title: "WAYPOINT — Equipment for the way ahead", description: "Premium outdoor gear for the next point on your route.", type: "website" },
+  openGraph: { title: "WAYPOINT — Снаряжение для вашего пути", description: "Функциональное снаряжение для следующей точки вашего маршрута.", type: "website" },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
