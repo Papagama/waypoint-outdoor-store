@@ -22,3 +22,7 @@
 @media (max-width:1000px) { .gallery-thumbnails { min-height:510px; } }
 @media (max-width:720px) { .catalog-toolbar { gap:8px; } .sort-select { min-width:0; gap:5px; } .sort-select>span { display:none; } .sort-select select { min-width:0; width:120px; } .product-actions { width:100%; justify-content:space-between; } .product-actions .quick-add { width:auto; } .gallery-thumbnails { grid-column:span 2; grid-template-columns:repeat(3,minmax(0,1fr)); grid-template-rows:none; min-height:120px; gap:6px; } .gallery-thumb { min-height:120px; } .gallery-thumb>span { font-size:7px; } }
 @media (prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto!important; transition-duration:.01ms!important; animation-duration:.01ms!important; animation-iteration-count:1!important; } }
+
+/* Keep the native sorting control easy to target while retaining the custom chevron. */
+.catalog-toolbar .sort-select select { min-width:130px; padding-right:18px; cursor:pointer; }
+.catalog-toolbar .sort-select > svg:last-child { pointer-events:none; }

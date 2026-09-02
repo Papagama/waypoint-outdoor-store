@@ -15,7 +15,7 @@ export function ProductCard({ product, priority = false }: { product: Product; p
   return <article className="product-card">
     <Link className="product-image" href={`/product/${product.slug}`} aria-label={`Открыть карточку ${product.name}`} prefetch={priority}>
       <ProductVisual product={product} decorative />
-      <span className={`stock-chip ${product.stock}`}>{product.stock === "out" ? "Нет в наличии" : product.stock === "low" ? "Мало" : product.collection}</span>
+      {product.stock !== "in" && <span className={`stock-chip ${product.stock}`}>{product.stock === "out" ? "Нет в наличии" : "Мало"}</span>}
       <span className="product-open" aria-hidden="true"><ArrowUpRight size={16} /></span>
     </Link>
     <div className="product-info">

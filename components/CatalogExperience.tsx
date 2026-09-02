@@ -10,6 +10,24 @@ import { categoryName } from "@/lib/localize";
 
 const categoryOptions = ["Shelter", "Sleep", "Carry", "Cook", "Light", "Camp", "Navigate", "Essentials"];
 const seasonOptions = ["Summer", "Shoulder", "Winter"];
+type SortOption = "recommended" | "new" | "rating" | "price-asc" | "price-desc";
+
+function sortProducts(items: typeof products, sort: SortOption) {
+  return items
+    .map((product, index) => ({ product, index }))
+    .sort((a, b) => {
+      const priceDelta = a.product.price - b.product.price;
+      const ratingDelta = b.product.rating - a.product.rating;
+      const featuredDelta = Number(b.product.tags.includes("featured")) - Number(a.product.tags.includes("featured"));
+
+      if (sort === "price-asc") return priceDelta || a.index - b.index;
+      if (sort === "price-desc") return -priceDelta || a.index - b.index;
+      if (sort === "rating") return ratingDelta || b.product.reviews - a.product.reviews || a.index - b.index;
+      if (sort === "new") return b.index - a.index;
+      return featuredDelta || ratingDelta || a.index - b.index;
+    })
+    .map(({ product }) => product);
+}
 
 export function CatalogExperience() {
   const params = useSearchParams();
@@ -17,7 +35,7 @@ export function CatalogExperience() {
   const [season, setSeason] = useState("All");
   const [availability, setAvailability] = useState("All");
   const [maxPrice, setMaxPrice] = useState(80000);
-  const [sort, setSort] = useState("recommended");
+  const [sort, setSort] = useState<SortOption>("recommended");
   const [filtersOpen, setFiltersOpen] = useState(false);
   const query = params.get("q")?.toLocaleLowerCase() ?? "";
 
@@ -30,13 +48,7 @@ export function CatalogExperience() {
       const matchesQuery = !query || `${product.name} ${product.category} ${product.shortDescription}`.toLowerCase().includes(query);
       return matchesCategory && matchesSeason && matchesStock && matchesPrice && matchesQuery;
     });
-    return [...result].sort((a, b) => {
-      if (sort === "price-asc") return a.price - b.price;
-      if (sort === "price-desc") return b.price - a.price;
-      if (sort === "rating") return b.rating - a.rating;
-      if (sort === "new") return b.id.localeCompare(a.id);
-      return Number(b.tags.includes("featured")) - Number(a.tags.includes("featured"));
-    });
+    return sortProducts(result, sort);
   }, [category, season, availability, maxPrice, sort, query]);
 
   const reset = () => { setCategory("All"); setSeason("All"); setAvailability("All"); setMaxPrice(80000); setSort("recommended"); };
@@ -49,8 +61,8 @@ export function CatalogExperience() {
   </>;
 
   return <main className="catalog-page shell">
-    <header className="catalog-head"><p className="eyebrow">WAYPOINT / КАТАЛОГ СНАРЯЖЕНИЯ</p><div><h1>{query ? `Поиск: «${params.get("q")}»` : "Снаряжение для вашего пути."}</h1><p>{query ? "Подходящие товары в демонстрационном каталоге." : "Функциональные предметы для маршрута, лагеря и следующей остановки."}</p></div></header>
-    <div className="catalog-toolbar"><button className="mobile-filter-button" onClick={() => setFiltersOpen(true)}><SlidersHorizontal size={17} /> Фильтры</button><span>{pluralProducts(filtered.length)}</span><label className="sort-select"><ArrowDownUp size={15} /><span>Сортировка</span><select value={sort} onChange={(event) => setSort(event.target.value)} aria-label="Сортировка каталога"><option value="recommended">Рекомендованные</option><option value="new">Новинки</option><option value="rating">По рейтингу</option><option value="price-asc">Цена: по возрастанию</option><option value="price-desc">Цена: по убыванию</option></select><ChevronDown size={14} /></label></div>
+    <header className="catalog-head"><div><h1>{query ? `Поиск: «${params.get("q")}»` : "Снаряжение для вашего пути."}</h1><p>{query ? "Подходящие товары в демонстрационном каталоге." : "Функциональные предметы для маршрута, лагеря и следующей остановки."}</p></div></header>
+    <div className="catalog-toolbar"><button className="mobile-filter-button" onClick={() => setFiltersOpen(true)}><SlidersHorizontal size={17} /> Фильтры</button><span>{pluralProducts(filtered.length)}</span><label className="sort-select"><ArrowDownUp size={15} /><span>Сортировка</span><select value={sort} onChange={(event) => setSort(event.target.value as SortOption)} aria-label="Сортировка каталога"><option value="recommended">Рекомендованные</option><option value="new">Новинки</option><option value="rating">По рейтингу</option><option value="price-asc">Цена: по возрастанию</option><option value="price-desc">Цена: по убыванию</option></select><ChevronDown size={14} /></label></div>
     <div className="catalog-layout"><aside className="filter-sidebar">{filters}</aside><section className="catalog-results">{filtered.length > 0 ? <div className="product-grid catalog-grid">{filtered.map((product) => <ProductCard key={product.id} product={product} />)}</div> : <div className="catalog-empty"><span className="empty-mark">W/</span><h2>Маршрут пока не найден.</h2><p>Измените условия фильтра — каталог снова покажет подходящие предметы.</p><button className="button button-dark" onClick={reset}>Сбросить фильтры</button></div>}</section></div>
     {filtersOpen && <div className="filter-sheet" role="dialog" aria-modal="true" aria-label="Фильтры каталога"><button className="drawer-backdrop" aria-label="Закрыть фильтры" onClick={() => setFiltersOpen(false)} /><div className="filter-sheet-inner"><button className="sheet-close" onClick={() => setFiltersOpen(false)} aria-label="Закрыть"><X /></button>{filters}<button className="button button-dark button-full" onClick={() => setFiltersOpen(false)}>Показать {filtered.length} {pluralProducts(filtered.length).split(" ")[1]}</button></div></div>}
   </main>;

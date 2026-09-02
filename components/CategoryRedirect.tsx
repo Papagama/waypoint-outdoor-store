@@ -12,5 +12,5 @@ export default function CategoryRedirect({ category }: { category: string }) {
     router.replace(href);
   }, [href, router]);
 
-  return <main className="shell"><section className="empty-state"><p className="eyebrow">WAYPOINT / КАТАЛОГ</p><h1>Открываем каталог</h1><Link href={href} className="button button-dark">Продолжить</Link></section></main>;
+  return <main className="shell"><section className="empty-state"><h1>Открываем каталог</h1><Link href={href} className="button button-dark">Продолжить</Link></section></main>;
 }
