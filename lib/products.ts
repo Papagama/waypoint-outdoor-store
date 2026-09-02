@@ -17,7 +17,9 @@ export const categories = [
   { number: "08", name: "Essentials", description: "Небольшие важные вещи", href: "/catalog?category=Essentials" },
 ];
 
-const productCatalog: Product[] = [
+type ProductSeed = Omit<Product, "gallery">;
+
+const productCatalog: ProductSeed[] = [
   {
     id: "ridge-2", slug: "ridge-2", name: "Ridge 2", collection: "SHELTER / 02", category: "Shelter", price: 52900,
     description: "Лёгкая двухместная палатка для трёх сезонов. Продуманная геометрия создаёт устойчивое укрытие, когда маршрут меняется вместе с погодой.",
@@ -117,7 +119,28 @@ const productCatalog: Product[] = [
   }
 ];
 
-export const products = productCatalog.map((product) => ({ ...product, image: assetPath(product.image) }));
+const categoryGallery = {
+  Shelter: { src: "/images/products/shelter-gallery.png", views: ["Вид спереди", "Вид сбоку", "Деталь входа"] },
+  Sleep: { src: "/images/products/sleep-gallery.png", views: ["Разложенный комплект", "Вид в чехле", "Деталь материала"] },
+  Carry: { src: "/images/products/carry-gallery.png", views: ["Вид спереди", "Вид сбоку", "Деталь фурнитуры"] },
+  Cook: { src: "/images/products/cook-gallery.png", views: ["Основной вид", "Вид сбоку", "Деталь комплекта"] },
+  Light: { src: "/images/products/light-gallery.png", views: ["Основной вид", "Вид сбоку", "Деталь света"] },
+  Camp: { src: "/images/products/camp-gallery.png", views: ["Основной вид", "Сложенный вид", "Деталь конструкции"] },
+  Navigate: { src: "/images/products/navigate-gallery.png", views: ["Основной вид", "Вид сбоку", "Деталь управления"] },
+  Essentials: { src: "/images/products/essentials-gallery.png", views: ["Основной вид", "Вид сбоку", "Деталь материала"] },
+} as const;
+
+const galleryPositions = ["0% 50%", "50% 50%", "100% 50%"];
+
+export const products: Product[] = productCatalog.map((product) => {
+  const media = categoryGallery[product.category as keyof typeof categoryGallery];
+  const gallery = media.views.map((view, index) => ({
+    src: assetPath(media.src),
+    alt: `${product.name} — ${view.toLowerCase()}`,
+    position: galleryPositions[index],
+  }));
+  return { ...product, image: gallery[0].src, gallery };
+});
 
 export const featuredProducts = products.filter((product) => product.tags.includes("featured"));
 export const getProduct = (slug: string) => products.find((product) => product.slug === slug);

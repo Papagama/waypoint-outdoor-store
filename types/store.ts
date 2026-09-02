@@ -12,6 +12,7 @@ export type Product = {
   shortDescription: string;
   image: string;
   alt: string;
+  gallery: { src: string; alt: string; position: string }[];
   colors: { name: string; hex: string }[];
   rating: number;
   reviews: number;

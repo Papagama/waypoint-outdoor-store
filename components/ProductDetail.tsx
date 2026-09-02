@@ -6,21 +6,37 @@ import { Product } from "@/types/store";
 import { products } from "@/lib/products";
 import { formatPrice } from "@/lib/format";
 import { categoryName, colorName } from "@/lib/localize";
-import { assetPath } from "@/lib/site";
 import { useShop } from "@/context/ShopContext";
 import { ProductCard } from "@/components/ProductCard";
+import { ProductVisual } from "@/components/ProductVisual";
 import { useState } from "react";
+
+const galleryLabels = ["Основной вид", "Боковой ракурс", "Деталь"];
 
 export function ProductDetail({ product }: { product: Product }) {
   const [color, setColor] = useState(product.colors[0]?.name ?? "Standard");
   const [quantity, setQuantity] = useState(1);
+  const [activeImage, setActiveImage] = useState(0);
   const [openSpec, setOpenSpec] = useState<string | null>("details");
   const { addProduct, favorites, toggleFavorite } = useShop();
   const related = products.filter((item) => item.category !== product.category && item.stock !== "out").slice(0, 4);
   const add = () => { for (let index = 0; index < quantity; index += 1) addProduct(product, color); };
+
   return <main className="product-page">
     <div className="shell breadcrumb"><Link href="/catalog">Каталог</Link><span>/</span><Link href={`/catalog?category=${product.category}`}>{categoryName(product.category)}</Link><span>/</span><b>{product.name}</b></div>
-    <section className="shell product-top"><div className="product-gallery"><div className="gallery-main"><img src={product.image} alt={product.alt} /></div><div className="gallery-detail gallery-detail-dark"><img src={assetPath("/images/hero-route.png")} alt="Походный лагерь в природном ландшафте" /></div><div className="gallery-detail"><img src={assetPath("/images/field-kit.png")} alt="Деталь походного снаряжения" /></div></div>
+    <section className="shell product-top">
+      <div className="product-gallery" aria-label={`Фотографии товара ${product.name}`}>
+        <div className="gallery-main">
+          <ProductVisual product={product} view={activeImage} decorative />
+          <span className="gallery-counter">{activeImage + 1} / {product.gallery.length}</span>
+        </div>
+        <div className="gallery-thumbnails" role="tablist" aria-label="Ракурсы товара">
+          {product.gallery.map((image, index) => <button type="button" className={`gallery-thumb ${activeImage === index ? "is-active" : ""}`} aria-label={image.alt} aria-pressed={activeImage === index} key={image.position} onClick={() => setActiveImage(index)}>
+            <ProductVisual product={product} view={index} decorative />
+            <span>{galleryLabels[index] ?? `Фото ${index + 1}`}</span>
+          </button>)}
+        </div>
+      </div>
       <div className="product-buy"><p className="eyebrow">{product.collection}</p><div className="product-heading"><h1>{product.name}</h1><button className={`heart-button ${favorites.includes(product.id) ? "is-active" : ""}`} onClick={() => toggleFavorite(product.id)} aria-label="Добавить в избранное"><Heart size={21} fill={favorites.includes(product.id) ? "currentColor" : "none"} /></button></div><p className="product-lead">{product.shortDescription}</p><div className="rating"><Star size={16} fill="currentColor" /><b>{product.rating}</b><span>/ {product.reviews} оценок в демо-данных</span></div><p className="detail-price">{formatPrice(product.price)} {product.previousPrice && <del>{formatPrice(product.previousPrice)}</del>}</p>
         <div className="option-block"><span>Цвет <b>{colorName(color)}</b></span><div className="color-options">{product.colors.map((item) => <button title={colorName(item.name)} aria-label={`Выбрать цвет ${colorName(item.name)}`} className={color === item.name ? "selected" : ""} style={{ backgroundColor: item.hex }} key={item.name} onClick={() => setColor(item.name)} />)}</div></div>
         <div className="quantity-block"><span>Количество</span><div className="quantity"><button onClick={() => setQuantity(Math.max(1, quantity - 1))} aria-label="Уменьшить количество"><Minus size={15} /></button><span>{quantity}</span><button onClick={() => setQuantity(quantity + 1)} aria-label="Увеличить количество"><Plus size={15} /></button></div></div>
@@ -30,7 +46,7 @@ export function ProductDetail({ product }: { product: Product }) {
       </div>
     </section>
     <section className="shell specs-band">{product.specs.map((spec) => <div key={spec.label}><b>{spec.value}</b><span>{spec.label.toUpperCase()}</span></div>)}</section>
-    <section className="field-tested"><div className="field-tested-image"><img src={assetPath("/images/hero-route.png")} alt="Спокойный горный лагерь" /></div><div className="field-tested-copy"><p className="eyebrow">ПОЛЕВОЕ ТЕСТИРОВАНИЕ / В ОЖИДАНИИ</p><h2>Создано для<br /><i>погоды впереди.</i></h2><p>{product.description}</p><p className="legal-note">Визуал и описание — концептуальные материалы. До публикации нужны реальная съёмка, техническое подтверждение и редакционный материал.</p></div></section>
+    <section className="field-tested"><div className="field-tested-image"><ProductVisual product={product} view={1} decorative /></div><div className="field-tested-copy"><p className="eyebrow">ПОЛЕВОЕ ТЕСТИРОВАНИЕ / В ОЖИДАНИИ</p><h2>Создано для<br /><i>погоды впереди.</i></h2><p>{product.description}</p><p className="legal-note">Визуал и описание — концептуальные материалы. До публикации нужны реальная съёмка, техническое подтверждение и редакционный материал.</p></div></section>
     <section className="shell product-details"><div><p className="eyebrow">ИНФОРМАЦИЯ О ТОВАРЕ</p><h2>Всё<br /><i>на своём месте.</i></h2></div><div className="accordion-list">{[
       ["details", "Описание", product.description],
       ["specs", "Технические характеристики", product.specs.map((spec) => `${spec.label}: ${spec.value}`).join(" · ")],
